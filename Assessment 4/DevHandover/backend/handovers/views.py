@@ -89,7 +89,9 @@ def evidence(request,pk,item_id):
   if action not in ('save','submit'):return error('Action must be save or submit.')
   if request.data.get('version')!=item.version:return error('This item changed. Reload before editing.',409)
   url=str(request.data.get('documentation_url','')).strip()
-  notes=str(request.data.get('notes','')).strip()
+  notes=request.data.get('notes','')
+  if not isinstance(notes,str):return error('Notes must be text.')
+  notes=notes.strip()
   if len(url)>2048 or (url and not valid_url(url)):return error('Supply an absolute http/https URL (maximum 2048 characters), without embedded credentials.')
   if len(notes)>10000:return error('Notes must be at most 10000 characters.')
   if action=='submit' and (not url or not notes):return error('Submission requires a documentation URL and non-blank notes.')
@@ -111,7 +113,10 @@ def review(request,pk,item_id):
   if not roles(request.user,p).intersection({'lead','reviewer'}):return error('Incoming reviewer permission required.',403)
   if 'outgoing' in roles(request.user,p):return error('You cannot verify your own evidence.',403)
   if request.data.get('version')!=item.version:return error('This item changed. Reload before reviewing.',409)
-  action=request.data.get('action');comment=str(request.data.get('comment','')).strip()
+  action=request.data.get('action')
+  comment=request.data.get('comment','')
+  if not isinstance(comment,str):return error('Correction comment must be text.')
+  comment=comment.strip()
   if action=='verify' and item.status=='submitted':
    item.status='verified';item.review_comment=''
   elif action=='corrections' and item.status in ('submitted','verified'):
