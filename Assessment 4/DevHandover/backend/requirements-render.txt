@@ -1,0 +1,4 @@
+-r requirements.txt
+gunicorn>=23,<24
+whitenoise>=6.9,<7
+dj-database-url>=2.3,<4

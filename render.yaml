@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: devhandover-sdm404
+    runtime: docker
+    plan: free
+    rootDir: "Assessment 4/DevHandover"
+    healthCheckPath: /health/
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEVHANDOVER_DEMO_PASSWORD
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: devhandover-sdm404-db
+          property: connectionString
+
+databases:
+  - name: devhandover-sdm404-db
+    plan: free
+    databaseName: devhandover
+    user: devhandover
+    ipAllowList: []
